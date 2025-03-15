@@ -17,8 +17,13 @@ class World {
 public:
     World();
     void render(shader& mainShader);
+    std::vector<std::reference_wrapper<Chunk>> getChunks();
+
+    bool hasChunk(const std::pair<int, int>& cpos) const;
+
+    Chunk* getChunkPtr(const std::pair<int, int>& cpos);
   
 private:
-    constexpr static int renderDistance = 1;
+    constexpr static int16_t renderDistance = 5;
     std::unordered_map<std::pair<int, int>, Chunk, hash_pair> chunks;
 };

@@ -84,6 +84,7 @@ void main::processRendering(GLFWwindow* window, shader& mainShader, World& world
 	mainShader.setMat4("model", model);
 	mainShader.setMat4("view", view);
 	mainShader.setMat4("projection", projection);
+	world.render(mainShader);
 
 	mainShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 	mainShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
