@@ -1,0 +1,9 @@
+build/
+.vs/
+x64/
+Voxly/
+Voxly/x64/
+Voxly.sln
+Voxly.vcxproj
+Voxly.vcxproj.filters
+Voxly.vcxproj.user
