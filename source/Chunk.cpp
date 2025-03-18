@@ -7,6 +7,31 @@ Chunk::Chunk(glm::vec3 worldPos, std::pair<int, int> chunkCoord, World* worldRef
     generateMesh();
 }
 
+Chunk::~Chunk() {}
+
+void Chunk::cleanupOpenGLResources()
+{
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    // Delete SSBOs
+    if (glIsBuffer(vertexSSBO)) {
+        glDeleteBuffers(1, &vertexSSBO);
+        vertexSSBO = 0;
+    }
+    if (glIsBuffer(indexSSBO)) {
+        glDeleteBuffers(1, &indexSSBO);
+        indexSSBO = 0;
+    }
+
+    // Delete VAO
+    if (glIsVertexArray(dummyVAO)) {
+        glDeleteVertexArrays(1, &dummyVAO);
+        dummyVAO = 0;
+    }
+}
+
 void Chunk::generateChunk() {
     chunkData.resize(CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE, BlockType::AIR);
 

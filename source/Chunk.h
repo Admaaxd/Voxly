@@ -21,12 +21,13 @@ private:
     GLuint VAO, vertexSSBO, indexSSBO;
 
     GLuint dummyVAO;
-
     World* world;
     std::pair<int, int> coord;
 
 public:
     Chunk(glm::vec3 position, std::pair<int, int> chunkCoord, World* worldRef);
+    ~Chunk();
+    void cleanupOpenGLResources();
     void generateChunk();
     void generateMesh();
     void render(shader& shader);

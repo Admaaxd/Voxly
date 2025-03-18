@@ -22,6 +22,10 @@ public:
     bool hasChunk(const std::pair<int, int>& cpos) const;
 
     Chunk* getChunkPtr(const std::pair<int, int>& cpos);
+
+    void loadChunk(int16_t x, int16_t z);
+    void unloadChunk(int16_t x, int16_t z);
+    void updateChunks(glm::vec3 playerPosition);
   
 private:
     constexpr static int16_t renderDistance = 5;
