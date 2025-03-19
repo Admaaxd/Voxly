@@ -83,14 +83,13 @@ void main::processRendering(GLFWwindow* window, shader& mainShader, World& world
 	mainShader.setMat4("model", model);
 	mainShader.setMat4("view", view);
 	mainShader.setMat4("projection", projection);
-	world.render(mainShader);
-	world.updateChunks(camera.getPosition());
 
 	mainShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 	mainShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	mainShader.setVec3("lightPos", glm::vec3(5.0f, 80.0f, 5.0f));
 
 	world.render(mainShader);
+	world.updateChunks(camera.getPosition());
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
