@@ -101,15 +101,32 @@ void World::updateChunks(glm::vec3 playerPosition) {
             activeChunks.insert(chunkCoord);
 
             if (!hasChunk(chunkCoord)) {
-                loadChunk(chunkCoord.first, chunkCoord.second);
+                std::lock_guard<std::mutex> lock(pendingMutex);
+                if (std::find(pendingChunks.begin(), pendingChunks.end(), chunkCoord) == pendingChunks.end()) {
+                    pendingChunks.push_back(chunkCoord);
+                }
             }
         }
     }
 
+    auto now = std::chrono::steady_clock::now();
+    if (now - lastChunkLoadTime >= loadDelay) {
+        std::lock_guard<std::mutex> lock(pendingMutex);
+        if (!pendingChunks.empty()) {
+            auto coord = pendingChunks.front();
+            pendingChunks.pop_front();
+            loadChunk(coord.first, coord.second);
+            lastChunkLoadTime = now;
+        }
+    }
+
     std::vector<std::pair<int, int>> chunksToUnload;
-    for (const auto& [chunkCoord, chunk] : chunks) {
-        if (activeChunks.find(chunkCoord) == activeChunks.end()) {
-            chunksToUnload.push_back(chunkCoord);
+    {
+        std::lock_guard<std::mutex> lock(chunksMutex);
+        for (const auto& [chunkCoord, chunk] : chunks) {
+            if (activeChunks.find(chunkCoord) == activeChunks.end()) {
+                chunksToUnload.push_back(chunkCoord);
+            }
         }
     }
 

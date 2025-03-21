@@ -88,6 +88,9 @@ void main::processRendering(GLFWwindow* window, shader& mainShader, World& world
 	mainShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	mainShader.setVec3("lightPos", glm::vec3(5.0f, 100.0f, 5.0f));
 
+	mainShader.setVec3("cameraPos", camera.getPosition());
+	mainShader.setVec3("fogColor", glm::vec3(0.4f, 0.6f, 0.8f));
+
 	std::cout << "Player position: "
 		<< camera.getPosition().x << ", "
 		<< camera.getPosition().y << ", "

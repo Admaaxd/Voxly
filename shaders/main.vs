@@ -35,12 +35,17 @@ layout(std430, binding = 1) buffer IndexBuffer {
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+uniform vec3 cameraPos;
 
 uniform vec3 chunkOffset;
 
 out vec3 FragPos;
 out vec2 TexCoord;
 out vec3 Normal;
+out float visibility;
+
+const float fogDensity = 0.005;
+const float fogGradient = 1.5;
 
 void main() {
     uint index = indices[gl_VertexID];
@@ -54,6 +59,12 @@ void main() {
     FragPos = pos;
     Normal = normal;
     TexCoord = texCoord;
+
+    // Calculate fog visibility
+    float distance = length(pos - cameraPos);
+    float fogFactor = distance * fogDensity;
+    visibility = exp(-pow(fogFactor, fogGradient));
+    visibility = clamp(visibility, 0.0, 1.0);
 
     gl_Position = projection * view * model * vec4(pos, 1.0);
 }

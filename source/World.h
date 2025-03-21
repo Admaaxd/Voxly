@@ -27,14 +27,18 @@ public:
     void unloadChunk(int16_t x, int16_t z);
     void updateChunks(glm::vec3 playerPosition);
 
-    void processMeshUploads();;
-  
+    void processMeshUploads();  
 private:
-    constexpr static int16_t renderDistance = 7;
+    constexpr static int16_t renderDistance = 10;
     std::unordered_map<std::pair<int, int>, Chunk, hash_pair> chunks;
     ThreadPool threadPool;
     std::mutex meshQueueMutex;
     std::mutex chunksMutex;
     std::queue<ChunkMeshData> meshUploadQueue;
     ChunkMeshData generateChunkMeshData(std::pair<int16_t, int16_t> chunkCoord, glm::vec3 position);
+    std::deque<std::pair<int, int>> pendingChunks;
+    std::mutex pendingMutex;
+
+    std::chrono::steady_clock::time_point lastChunkLoadTime;
+    std::chrono::milliseconds loadDelay = std::chrono::milliseconds(10);
 };
