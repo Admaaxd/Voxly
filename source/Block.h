@@ -58,4 +58,10 @@ struct CompactBlockVertex {
     uint32_t texCoord;
 };
 
+void AddFaceToMesh(std::vector<CompactBlockVertex>& compactVertices,
+    std::vector<GLuint>& indices,
+    glm::vec3 pos,
+    const GLfloat* faceData,
+    GLuint& indexOffset);
+
 class Block {};

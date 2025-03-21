@@ -86,10 +86,16 @@ void main::processRendering(GLFWwindow* window, shader& mainShader, World& world
 
 	mainShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 	mainShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	mainShader.setVec3("lightPos", glm::vec3(5.0f, 80.0f, 5.0f));
+	mainShader.setVec3("lightPos", glm::vec3(5.0f, 100.0f, 5.0f));
 
-	world.render(mainShader);
+	std::cout << "Player position: "
+		<< camera.getPosition().x << ", "
+		<< camera.getPosition().y << ", "
+		<< camera.getPosition().z << std::endl;
+
+	world.processMeshUploads();
 	world.updateChunks(camera.getPosition());
+	world.render(mainShader);
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
