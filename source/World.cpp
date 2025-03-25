@@ -61,7 +61,7 @@ Chunk* World::getChunkPtr(const std::pair<int, int>& cpos) {
 }
 
 void World::loadChunk(int16_t x, int16_t z) {
-    std::pair<int, int> chunkCoord = { x, z };
+    std::pair<int16_t, int16_t> chunkCoord = { x, z };
 
     if (hasChunk(chunkCoord)) {
         return;
@@ -80,7 +80,7 @@ void World::loadChunk(int16_t x, int16_t z) {
 }
 
 void World::unloadChunk(int16_t x, int16_t z) {
-    std::pair<int, int> chunkCoord = { x, z };
+    std::pair<int16_t, int16_t> chunkCoord = { x, z };
 
     auto it = chunks.find(chunkCoord);
     if (it != chunks.end()) {
@@ -93,11 +93,11 @@ void World::updateChunks(glm::vec3 playerPosition) {
     int16_t playerChunkX = static_cast<int16_t>(std::floor(playerPosition.x / CHUNK_SIZE));
     int16_t playerChunkZ = static_cast<int16_t>(std::floor(playerPosition.z / CHUNK_SIZE));
 
-    std::unordered_set<std::pair<int, int>, hash_pair> activeChunks;
+    std::unordered_set<std::pair<int16_t, int16_t>, hash_pair> activeChunks;
 
     for (int16_t x = -renderDistance; x <= renderDistance; ++x) {
         for (int16_t z = -renderDistance; z <= renderDistance; ++z) {
-            std::pair<int, int> chunkCoord = { playerChunkX + x, playerChunkZ + z };
+            std::pair<int16_t, int16_t> chunkCoord = { playerChunkX + x, playerChunkZ + z };
             activeChunks.insert(chunkCoord);
 
             if (!hasChunk(chunkCoord)) {
@@ -120,7 +120,7 @@ void World::updateChunks(glm::vec3 playerPosition) {
         }
     }
 
-    std::vector<std::pair<int, int>> chunksToUnload;
+    std::vector<std::pair<int16_t, int16_t>> chunksToUnload;
     {
         std::lock_guard<std::mutex> lock(chunksMutex);
         for (const auto& [chunkCoord, chunk] : chunks) {
@@ -149,13 +149,13 @@ ChunkMeshData World::generateChunkMeshData(std::pair<int16_t, int16_t> chunkCoor
     constexpr GLfloat noiseScale = 0.9f;
 
     // Generate block data
-    for (int x = 0; x < CHUNK_SIZE; ++x) {
-        for (int z = 0; z < CHUNK_SIZE; ++z) {
-            float worldX = position.x + x;
-            float worldZ = position.z + z;
-            float noiseValue = noise.GetNoise(worldX * noiseScale, worldZ * noiseScale);
-            int height = static_cast<int>((noiseValue + 1.0f) * 0.5f * CHUNK_HEIGHT);
-            for (int y = 0; y <= height; ++y) {
+    for (int16_t x = 0; x < CHUNK_SIZE; ++x) {
+        for (int16_t z = 0; z < CHUNK_SIZE; ++z) {
+            GLfloat worldX = position.x + x;
+            GLfloat worldZ = position.z + z;
+            GLfloat noiseValue = noise.GetNoise(worldX * noiseScale, worldZ * noiseScale);
+            int16_t height = static_cast<int16_t>((noiseValue + 1.0f) * 0.5f * CHUNK_HEIGHT);
+            for (int16_t y = 0; y <= height; ++y) {
                 data.blocks[x + CHUNK_SIZE * (y + CHUNK_HEIGHT * z)] = BlockType::SOLID;
             }
         }
@@ -163,16 +163,16 @@ ChunkMeshData World::generateChunkMeshData(std::pair<int16_t, int16_t> chunkCoor
 
     // Generate mesh
     GLuint indexOffset = 0;
-    for (int x = 0; x < CHUNK_SIZE; ++x) {
-        for (int y = 0; y < CHUNK_HEIGHT; ++y) {
-            for (int z = 0; z < CHUNK_SIZE; ++z) {
-                int idx = x + CHUNK_SIZE * (y + CHUNK_HEIGHT * z);
+    for (int16_t x = 0; x < CHUNK_SIZE; ++x) {
+        for (int16_t y = 0; y < CHUNK_HEIGHT; ++y) {
+            for (int16_t z = 0; z < CHUNK_SIZE; ++z) {
+                int16_t idx = x + CHUNK_SIZE * (y + CHUNK_HEIGHT * z);
                 if (data.blocks[idx] == BlockType::AIR) continue;
 
                 glm::vec3 blockPos(x, y, z);
 
                 // A helper that only works for blocks inside the same chunk
-                auto isFaceVisibleInternal = [&](int nx, int ny, int nz) -> bool {
+                auto isFaceVisibleInternal = [&](int16_t nx, int16_t ny, int16_t nz) -> bool {
                     if (nx < 0 || ny < 0 || nz < 0 || nx >= CHUNK_SIZE || ny >= CHUNK_HEIGHT || nz >= CHUNK_SIZE)
                         return true;
                     return data.blocks[nx + CHUNK_SIZE * (ny + CHUNK_HEIGHT * nz)] == BlockType::AIR;

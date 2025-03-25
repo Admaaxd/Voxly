@@ -38,15 +38,13 @@ public:
     Chunk(glm::vec3 position, std::pair<int, int> chunkCoord, World* worldRef);
     ~Chunk();
     void cleanupOpenGLResources();
-    void generateChunk();
-    void generateMesh();
     void render(shader& shader);
     void uploadMeshToGPU();
-    bool isFaceVisible(int x, int y, int z);
-    inline BlockType& getBlock(int x, int y, int z);
+    inline BlockType& getBlock(int16_t x, int16_t y, int16_t z);
     glm::vec3 getOffset() const { return offset; }
     void uploadMeshFromThread(const ChunkMeshData& mesh);
-    void generateMesh_CPUOnly();
+
+    const std::vector<BlockType>& getChunkData() const { return chunkData; }
 
     std::pair<int, int> coord;
 };
